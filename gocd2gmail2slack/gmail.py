@@ -17,7 +17,7 @@ except ImportError:
 
 SCOPES = 'https://www.googleapis.com/auth/gmail.modify'
 CLIENT_SECRET_FILE = 'cfg/client_secret.json'
-APPLICATION_NAME = 'Gmail API Python Quickstart'
+APPLICATION_NAME = 'gocd2gmail2slack'
 
 
 def get_credentials():
@@ -35,7 +35,7 @@ def get_credentials():
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
     credential_path = os.path.join(credential_dir,
-                                   'gmail-python-quickstart.json')
+                                   'saved_credentials.json')
 
     store = oauth2client.file.Storage(credential_path)
     credentials = store.get()
@@ -50,26 +50,13 @@ def get_credentials():
     return credentials
 
 
-def main():
-    """Shows basic usage of the Gmail API.
+def connect_to_gmail_service():
+    """Creates a Gmail API service object.
 
-    Creates a Gmail API service object and outputs a list of label names
-    of the user's Gmail account.
+    Returns:
+        Service
     """
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
-
-    results = service.users().labels().list(userId='me').execute()
-    labels = results.get('labels', [])
-
-    if not labels:
-        print('No labels found.')
-    else:
-        print('Labels:')
-        for label in labels:
-            print(label['name'])
-
-
-if __name__ == '__main__':
-    main()
+    return service
