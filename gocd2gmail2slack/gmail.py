@@ -74,15 +74,21 @@ def get_label_id(label_name, labels):
 
 
 def query_builder(include_labels=None, exclude_labels=None):
-    query = None
+    include = ''
+    exclude = ''
+
     if include_labels:
         prefix = 'label:'
-        query = ' label:'.join(include_labels)
-        query = prefix + query
+        include = ' label:'.join(include_labels)
+        include = prefix + include
 
     if exclude_labels:
         prefix = '-label:'
-        query = ' -label:'.join(exclude_labels)
-        query = prefix + query
+        exclude = ' -label:'.join(exclude_labels)
+        exclude = prefix + exclude
 
-    return query
+    if include_labels and exclude_labels:
+        return include + ' ' + exclude
+
+    else:
+        return include + exclude
