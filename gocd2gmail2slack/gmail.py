@@ -50,7 +50,7 @@ def get_credentials():
     return credentials
 
 
-def connect_to_gmail_service():
+def get_service():
     """Creates a Gmail API service object.
 
     Returns:
@@ -71,3 +71,18 @@ def get_label_id(label_name, labels):
     for label in labels['labels']:
         if label['name'] == label_name:
             return label['id']
+
+
+def query_builder(include_labels=None, exclude_labels=None):
+    query = None
+    if include_labels:
+        prefix = 'label:'
+        query = ' label:'.join(include_labels)
+        query = prefix + query
+
+    if exclude_labels:
+        prefix = '-label:'
+        query = ' -label:'.join(exclude_labels)
+        query = prefix + query
+
+    return query
