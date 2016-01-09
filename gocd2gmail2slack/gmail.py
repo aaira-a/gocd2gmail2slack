@@ -60,3 +60,14 @@ def connect_to_gmail_service():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('gmail', 'v1', http=http)
     return service
+
+
+def get_labels(service):
+    labels = service.users().labels().list(userId='me').execute()
+    return labels
+
+
+def get_label_id(label_name, labels):
+    for label in labels['labels']:
+        if label['name'] == label_name:
+            return label['id']
