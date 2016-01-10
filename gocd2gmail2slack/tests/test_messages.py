@@ -5,6 +5,8 @@ from ..messages import (
     get_subject,
     is_gocd_pattern,
     get_gocd_details,
+    get_timestamp,
+    get_id,
 )
 
 from ..fixtures.gmail_message_detail_1 import MESSAGE1
@@ -16,6 +18,14 @@ class MessageDetailsTests(unittest.TestCase):
         actual = get_subject(MESSAGE1)
         expected = 'FW: Stage [product.branch.CI/100/Package/1] passed'
         self.assertEqual(expected, actual)
+
+    def test_get_internal_date_returns_utc_timestamp(self):
+        actual = get_timestamp(MESSAGE1)
+        self.assertEqual('1452243312000', actual)
+
+    def test_get_id(self):
+        actual = get_id(MESSAGE1)
+        self.assertEqual('1522072655d6e615', actual)
 
 
 class GocdDetailsTests(unittest.TestCase):

@@ -25,3 +25,11 @@ def get_gocd_details(subject):
               'status': match.group(3),
               }
     return result
+
+
+def get_timestamp(message):
+    return message['internalDate']
+
+
+def get_id(message):
+    return message['id']
