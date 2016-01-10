@@ -112,3 +112,15 @@ def query_builder(include_labels=None, exclude_labels=None):
 
     else:
         return include + exclude
+
+
+def add_label(service, message_id, label_name, labels):
+    body = {'addLabelIds': [get_label_id(label_name, labels)]}
+    (service.users().messages()
+        .modify(userId='me', id=message_id, body=body).execute())
+
+
+def remove_label(service, message_id, label_name, labels):
+    body = {'removeLabelIds': [get_label_id(label_name, labels)]}
+    (service.users().messages()
+        .modify(userId='me', id=message_id, body=body).execute())
