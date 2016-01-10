@@ -17,12 +17,15 @@ def main():
             subject = messages.get_subject(message)
             if messages.is_gocd_pattern(subject):
                 gocd_details = messages.get_gocd_details(subject)
-                slack.send_to_slack(gocd_details['pipeline'],
-                                    gocd_details['stage'],
-                                    gocd_details['status'],
-                                    WEBHOOK_URL)
-                gm.add_label(service, messages.get_id(message),
-                             'SENT_TO_SLACK', labels)
+                if slack.is_matching_send_rule(gocd_details):
+                    slack.send_to_slack(gocd_details['pipeline'],
+                                        gocd_details['stage'],
+                                        gocd_details['status'],
+                                        WEBHOOK_URL)
+                    gm.add_label(service, messages.get_id(message),
+                                 'SENT_TO_SLACK', labels)
 
             gm.remove_label(service, messages.get_id(message),
                             'UNREAD', labels)
+    except:
+        pass
