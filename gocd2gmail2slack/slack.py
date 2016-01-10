@@ -2,10 +2,8 @@
 import json
 import requests
 
-from gocd2gmail2slack.cfg.config import WEBHOOK_URL
 
-
-def send_to_slack(pipeline, stage, status):
+def send_to_slack(pipeline, stage, status, webhook_url):
 
     if status == 'passed':
         icon = ':white_check_mark:'
@@ -18,4 +16,4 @@ def send_to_slack(pipeline, stage, status):
             'icon_emoji': icon,
             'text': 'Pipeline: ' + pipeline + '\n' + 'Stage: ' + stage}
 
-    requests.post(WEBHOOK_URL, data=json.dumps(body))
+    requests.post(webhook_url, data=json.dumps(body))
