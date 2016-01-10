@@ -73,6 +73,26 @@ def get_label_id(label_name, labels):
             return label['id']
 
 
+def get_messages(service, include_labels=None, exclude_labels=None):
+    messages = (service.users().messages()
+                .list(userId='me',
+                      q=query_builder(include_labels=include_labels,
+                                      exclude_labels=exclude_labels))
+                .execute()
+                )
+
+    return messages
+
+
+def get_messages_details(service, messages):
+    details = []
+    for message in messages['messages']:
+        detail = (service.users().messages()
+                  .get(userId='me', id=message['id']).execute())
+        details.append(detail)
+    return details
+
+
 def query_builder(include_labels=None, exclude_labels=None):
     include = ''
     exclude = ''
