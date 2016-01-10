@@ -6,9 +6,11 @@ import responses
 from ..slack import (
     send_to_slack,
     is_matching_send_rule,
+    get_pipeline_url,
 )
 
 TEST_WEBHOOK_URL = 'https://web.hook.url/123/456'
+TEST_GOCD_DASHBOARD_URL = 'http://domain:port/go'
 
 
 class SlackIncomingWebhookTests(unittest.TestCase):
@@ -16,27 +18,27 @@ class SlackIncomingWebhookTests(unittest.TestCase):
     @responses.activate
     def test_calling_correct_webhook_url(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'passed', TEST_WEBHOOK_URL)
+        send_to_slack('pipeline1', 'package', 'passed', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
         self.assertEqual(TEST_WEBHOOK_URL, responses.calls[0].request.url)
 
     @responses.activate
     def test_tick_icon_for_passing_build(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'passed', TEST_WEBHOOK_URL)
+        send_to_slack('pipeline1', 'package', 'passed', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
         expected = """icon_emoji": ":white_check_mark:"""
         self.assertIn(expected, responses.calls[0].request.body)
 
     @responses.activate
     def test_x_icon_for_failing_build(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'failed', TEST_WEBHOOK_URL)
+        send_to_slack('pipeline1', 'package', 'failed', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
         expected = """icon_emoji": ":x:"""
         self.assertIn(expected, responses.calls[0].request.body)
 
     @responses.activate
     def test_no_sending_for_other_status(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'error', TEST_WEBHOOK_URL)
+        send_to_slack('pipeline1', 'package', 'error', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
         self.assertEqual(0, len(responses.calls))
 
 
@@ -58,3 +60,11 @@ class SlackSendingRuleTests(unittest.TestCase):
         for stage in ['Build', 'Test', 'Unit']:
             details = self.factory(stage=stage, status='passed')
             self.assertFalse(is_matching_send_rule(details))
+
+
+class SlackPipelineUrlBuilder(unittest.TestCase):
+
+    def test_build_url_1(self):
+        pipeline = 'product.branch.action.environment'
+        expected = TEST_GOCD_DASHBOARD_URL + '/tab/pipeline/history/' + pipeline
+        self.assertEqual(expected, get_pipeline_url(TEST_GOCD_DASHBOARD_URL, pipeline))

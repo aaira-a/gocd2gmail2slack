@@ -3,7 +3,10 @@ import gmail as gm
 import messages
 import slack
 
-from cfg.config import WEBHOOK_URL
+from cfg.config import (
+    WEBHOOK_URL,
+    GOCD_DASHBOARD_URL,
+)
 
 
 def main():
@@ -21,7 +24,7 @@ def main():
                     slack.send_to_slack(gocd_details['pipeline'],
                                         gocd_details['stage'],
                                         gocd_details['status'],
-                                        WEBHOOK_URL)
+                                        WEBHOOK_URL, GOCD_DASHBOARD_URL)
                     gm.add_label(service, messages.get_id(message),
                                  'SENT_TO_SLACK', labels)
 
