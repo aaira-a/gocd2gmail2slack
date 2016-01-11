@@ -14,7 +14,7 @@ def send_to_slack(pipeline, stage, status, webhook_url, dashboard_url):
 
     body = {'username': 'go build status - ' + status,
             'icon_emoji': icon,
-            'text': (get_pipeline_url(dashboard_url, pipeline) +
+            'text': '<' + (get_pipeline_url(dashboard_url, pipeline) + '|' + pipeline + '>'
                      '\n' + 'Stage: ' + stage)}
 
     requests.post(webhook_url, data=json.dumps(body))
