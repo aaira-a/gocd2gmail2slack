@@ -1,7 +1,7 @@
 
 import unittest
 
-from ..messages import (
+from messages import (
     get_subject,
     is_gocd_pattern,
     get_gocd_details,
@@ -9,7 +9,7 @@ from ..messages import (
     get_id,
 )
 
-from ..fixtures.gmail_message_detail_1 import MESSAGE1
+from fixtures.gmail_message_detail_1 import MESSAGE1
 
 
 class MessageDetailsTests(unittest.TestCase):

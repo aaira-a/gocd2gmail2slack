@@ -3,7 +3,7 @@ import unittest
 
 import responses
 
-from ..slack import (
+from slack import (
     send_to_slack,
     is_matching_send_rule,
     get_pipeline_url,
