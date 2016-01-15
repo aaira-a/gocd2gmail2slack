@@ -32,6 +32,7 @@ class GocdDetailsTests(unittest.TestCase):
 
     def test_check_gocd_subject_pattern_valid(self):
         subjects = ['FW: Stage [proDuct.branch.CI/100/Package/1] passed',
+                    'FW: Stage [product.branch.CI/0/Package/2] is fixed'
                     'Stage [product.braNch.Deploy.Test0/212/Package/1] passed',
                     'Stage [product2.branch2.CI/10999/Package/1] failed']
         for subject in subjects:
@@ -48,4 +49,11 @@ class GocdDetailsTests(unittest.TestCase):
         expected = {'pipeline': 'pr0duct5.br4nch.CI',
                     'stage': 'Package',
                     'status': 'passed'}
+        self.assertEqual(expected, get_gocd_details(subject))
+
+    def test_get_gocd_details_status_2_words(self):
+        subject = 'FW: Stage [pr0duct5.br4nch.CI/0/Package/2] is fixed'
+        expected = {'pipeline': 'pr0duct5.br4nch.CI',
+                    'stage': 'Package',
+                    'status': 'is fixed'}
         self.assertEqual(expected, get_gocd_details(subject))

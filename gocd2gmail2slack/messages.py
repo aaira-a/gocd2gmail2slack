@@ -1,7 +1,7 @@
 
 import re
 
-GOCD_PATTERN = r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*(passed|failed)"
+GOCD_PATTERN = r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*(passed|failed|is fixed)"
 
 
 def get_subject(message):

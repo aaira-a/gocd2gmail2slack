@@ -29,6 +29,13 @@ class SlackIncomingWebhookTests(unittest.TestCase):
         self.assertIn(expected, responses.calls[0].request.body)
 
     @responses.activate
+    def test_tick_icon_for_fixed_build(self):
+        responses.add(responses.POST, TEST_WEBHOOK_URL)
+        send_to_slack('pipeline1', 'package', 'is fixed', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
+        expected = """icon_emoji": ":white_check_mark:"""
+        self.assertIn(expected, responses.calls[0].request.body)
+
+    @responses.activate
     def test_x_icon_for_failing_build(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
         send_to_slack('pipeline1', 'package', 'failed', TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
@@ -54,6 +61,11 @@ class SlackSendingRuleTests(unittest.TestCase):
     def test_list_of_allowed_passing_build_stage(self):
         for stage in ['Package', 'Deploy', 'Default', 'defaultStage']:
             details = self.factory(stage=stage, status='passed')
+            self.assertTrue(is_matching_send_rule(details))
+
+    def test_list_of_allowed_fixed_build_stage(self):
+        for stage in ['Package', 'Deploy', 'Default', 'defaultStage']:
+            details = self.factory(stage=stage, status='is fixed')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_ignored_passing_build_stage(self):
