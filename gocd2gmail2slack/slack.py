@@ -25,7 +25,8 @@ def is_matching_send_rule(gocd_details):
         return True
     if gocd_details['status'] in ['passed', 'is fixed']:
         if gocd_details['stage'] in ['Package', 'Deploy',
-                                     'Default', 'defaultStage']:
+                                     'Default', 'defaultStage',
+                                     'DeployAll']:
             return True
     else:
         return False
