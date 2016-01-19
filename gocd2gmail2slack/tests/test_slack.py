@@ -59,7 +59,7 @@ class SlackSendingRuleTests(unittest.TestCase):
         self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_passing_build_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage']:
+        for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
             details = self.factory(stage=stage, status='passed')
             self.assertTrue(is_matching_send_rule(details))
 
