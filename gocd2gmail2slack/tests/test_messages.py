@@ -7,6 +7,9 @@ from gocd2gmail2slack.messages import (
     get_gocd_details,
     get_timestamp,
     get_id,
+    get_body,
+    get_changeset_url,
+    get_revision_number,
 )
 
 from gocd2gmail2slack.fixtures.gmail_message_detail_1 import MESSAGE1
@@ -26,6 +29,25 @@ class MessageDetailsTests(unittest.TestCase):
     def test_get_id(self):
         actual = get_id(MESSAGE1)
         self.assertEqual('1522072655d6e615', actual)
+
+    def test_get_body(self):
+        actual = get_body(MESSAGE1)
+        self.assertIn('CHECK-INS', actual)
+
+
+class MessageBodyTests(unittest.TestCase):
+
+    def setUp(self):
+        self.body = get_body(MESSAGE1)
+
+    def test_get_changeset_url(self):
+        actual = get_changeset_url(self.body)
+        expected = 'https://code.domain.com/tfs/products/_versionControl/changeset/01234'
+        self.assertEqual(expected, actual)
+
+    def test_get_revision_number(self):
+        actual = get_revision_number(self.body)
+        self.assertEqual('01234', actual)
 
 
 class GocdDetailsTests(unittest.TestCase):
