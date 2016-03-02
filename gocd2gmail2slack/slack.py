@@ -16,15 +16,16 @@ def message_builder(pipeline, stage, status, changeset, changeset_url, dashboard
     else:
         return
 
-    if stage in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
-        changeset_url = 'N/A'
-        changeset = 'N/A'
-
     body = {'username': 'go build status - ' + status,
             'icon_emoji': icon,
-            'text': '<' + (get_pipeline_url(dashboard_url, pipeline) + '|' + pipeline + '>'
-                    '\n' + 'Stage: ' + stage +
-                    '\n' + 'Changeset: <' + changeset_url + '|' + changeset + '>')}
+            'text': '<' + (get_pipeline_url(dashboard_url, pipeline) + '|' + pipeline + '>')}
+
+    if stage not in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
+        body['text'] += '\nChangeset: <' + changeset_url + '|' + changeset + '>'
+
+    if status == 'failed':
+        body['text'] += '\nStage: ' + stage
+
     return body
 
 

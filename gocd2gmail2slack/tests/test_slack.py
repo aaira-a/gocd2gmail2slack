@@ -33,21 +33,55 @@ class SlackIncomingWebhookTests(unittest.TestCase):
 
 class MessageBuilderTests(unittest.TestCase):
 
+    @staticmethod
+    def factory(pipeline='pipe1', stage='stage1', status='status1',
+                changeset='12345', changeset_url='http://url',
+                dashboard_url='http://dash'):
+        return {'pipeline': pipeline, 'stage': stage, 'status': status,
+                'changeset': changeset, 'changeset_url': changeset_url,
+                'dashboard_url': dashboard_url}
+
     def test_tick_icon_for_passing_build(self):
-        body = message_builder('', 'package', 'passed', '', '', '')
+        params = self.factory(stage='package', status='passed')
+        body = message_builder(**params)
         self.assertEqual(':white_check_mark:', body['icon_emoji'])
 
     def test_tick_icon_for_fixed_build(self):
-        body = message_builder('', 'package', 'is fixed', '', '', '')
+        params = self.factory(stage='package', status='is fixed')
+        body = message_builder(**params)
         self.assertEqual(':white_check_mark:', body['icon_emoji'])
 
     def test_x_icon_for_failing_build(self):
-        body = message_builder('', 'package', 'failed', '', '', '')
+        params = self.factory(stage='package', status='failed')
+        body = message_builder(**params)
         self.assertEqual(':x:', body['icon_emoji'])
+
+    def test_include_changeset_for_ci_stages(self):
+        for stage in ['Build', 'Test', 'Package', 'Unit']:
+            params = self.factory(stage=stage, status='passed')
+            body = message_builder(**params)
+            self.assertIn('Changeset:', body['text'])
+
+    def test_exclude_changeset_for_deploy_stages(self):
+        for stage in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
+            params = self.factory(stage=stage, status='passed')
+            body = message_builder(**params)
+            self.assertNotIn('Changeset:', body['text'])
+
+    def test_include_stage_for_failing_builds(self):
+        params = self.factory(status='failed')
+        body = message_builder(**params)
+        self.assertIn('Stage:', body['text'])
+
+    def test_exclude_stage_for_passing_builds(self):
+        params = self.factory(status='passed')
+        body = message_builder(**params)
+        self.assertNotIn('Stage:', body['text'])
 
 
 class SlackSendingRuleTests(unittest.TestCase):
 
+    @staticmethod
     def factory(pipeline='pipe1', stage='stage1', status='status1'):
         return {'pipeline': pipeline, 'stage': stage, 'status': status}
 
