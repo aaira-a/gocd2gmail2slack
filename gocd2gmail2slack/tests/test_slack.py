@@ -1,4 +1,5 @@
 
+import ast
 import unittest
 
 import responses
@@ -7,6 +8,7 @@ from gocd2gmail2slack.slack import (
     send_to_slack,
     is_matching_send_rule,
     get_pipeline_url,
+    message_builder,
 )
 
 TEST_WEBHOOK_URL = 'https://web.hook.url/123/456'
@@ -18,40 +20,30 @@ class SlackIncomingWebhookTests(unittest.TestCase):
     @responses.activate
     def test_calling_correct_webhook_url(self):
         responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'passed', '', '',
-                      TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
+        send_to_slack('body', TEST_WEBHOOK_URL)
         self.assertEqual(TEST_WEBHOOK_URL, responses.calls[0].request.url)
 
     @responses.activate
+    def test_sending_correct_payload(self):
+        responses.add(responses.POST, TEST_WEBHOOK_URL)
+        expected = {'username': 'user', 'text': 'abc'}
+        send_to_slack(expected, TEST_WEBHOOK_URL)
+        self.assertDictEqual(expected, ast.literal_eval(responses.calls[0].request.body))
+
+
+class MessageBuilderTests(unittest.TestCase):
+
     def test_tick_icon_for_passing_build(self):
-        responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'passed', '', '',
-                      TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
-        expected = """icon_emoji": ":white_check_mark:"""
-        self.assertIn(expected, responses.calls[0].request.body)
+        body = message_builder('', 'package', 'passed', '', '', '')
+        self.assertEqual(':white_check_mark:', body['icon_emoji'])
 
-    @responses.activate
     def test_tick_icon_for_fixed_build(self):
-        responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'is fixed', '', '',
-                      TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
-        expected = """icon_emoji": ":white_check_mark:"""
-        self.assertIn(expected, responses.calls[0].request.body)
+        body = message_builder('', 'package', 'is fixed', '', '', '')
+        self.assertEqual(':white_check_mark:', body['icon_emoji'])
 
-    @responses.activate
     def test_x_icon_for_failing_build(self):
-        responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'failed', '', '',
-                      TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
-        expected = """icon_emoji": ":x:"""
-        self.assertIn(expected, responses.calls[0].request.body)
-
-    @responses.activate
-    def test_no_sending_for_other_status(self):
-        responses.add(responses.POST, TEST_WEBHOOK_URL)
-        send_to_slack('pipeline1', 'package', 'error', '', '',
-                      TEST_WEBHOOK_URL, TEST_GOCD_DASHBOARD_URL)
-        self.assertEqual(0, len(responses.calls))
+        body = message_builder('', 'package', 'failed', '', '', '')
+        self.assertEqual(':x:', body['icon_emoji'])
 
 
 class SlackSendingRuleTests(unittest.TestCase):
@@ -60,8 +52,9 @@ class SlackSendingRuleTests(unittest.TestCase):
         return {'pipeline': pipeline, 'stage': stage, 'status': status}
 
     def test_all_failed_builds_are_sent_regardless_of_stage(self):
-        details = self.factory(status='failed')
-        self.assertTrue(is_matching_send_rule(details))
+        for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+            details = self.factory(stage=stage, status='failed')
+            self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_passing_build_stage(self):
         for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
@@ -76,6 +69,11 @@ class SlackSendingRuleTests(unittest.TestCase):
     def test_list_of_ignored_passing_build_stage(self):
         for stage in ['Build', 'Test', 'Unit']:
             details = self.factory(stage=stage, status='passed')
+            self.assertFalse(is_matching_send_rule(details))
+
+    def test_unknown_build_status(self):
+        for status in ['unknown', 'error']:
+            details = self.factory(status=status)
             self.assertFalse(is_matching_send_rule(details))
 
 

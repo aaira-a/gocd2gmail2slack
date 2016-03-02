@@ -24,12 +24,14 @@ def main():
                     body = messages.get_body(message)
                     revision_number = messages.get_revision_number(body)
                     changeset_url = messages.get_changeset_url(body)
-                    slack.send_to_slack(gocd_details['pipeline'],
-                                        gocd_details['stage'],
-                                        gocd_details['status'],
-                                        revision_number,
-                                        changeset_url,
-                                        WEBHOOK_URL, GOCD_DASHBOARD_URL)
+                    text = (messages
+                            .message_builder(gocd_details['pipeline'],
+                                             gocd_details['stage'],
+                                             gocd_details['status'],
+                                             revision_number,
+                                             changeset_url,
+                                             GOCD_DASHBOARD_URL))
+                    slack.send_to_slack(text, WEBHOOK_URL)
                     gm.add_label(service, messages.get_id(message),
                                  'SENT_TO_SLACK', labels)
 
