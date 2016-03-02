@@ -3,7 +3,7 @@ import json
 import requests
 
 
-def send_to_slack(pipeline, stage, status, webhook_url, dashboard_url):
+def send_to_slack(pipeline, stage, status, changeset, changeset_url, webhook_url, dashboard_url):
 
     if status in ['passed', 'is fixed']:
         icon = ':white_check_mark:'
@@ -15,7 +15,8 @@ def send_to_slack(pipeline, stage, status, webhook_url, dashboard_url):
     body = {'username': 'go build status - ' + status,
             'icon_emoji': icon,
             'text': '<' + (get_pipeline_url(dashboard_url, pipeline) + '|' + pipeline + '>'
-                     '\n' + 'Stage: ' + stage)}
+                    '\n' + 'Stage: ' + stage +
+                    '\n' + 'Changeset: <' + changeset_url + '|' + changeset + '>')}
 
     requests.post(webhook_url, data=json.dumps(body))
 

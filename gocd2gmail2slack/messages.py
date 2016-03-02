@@ -4,7 +4,7 @@ import re
 
 GOCD_PATTERN = r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*(passed|failed|is fixed)"
 BASE_TFS_URL_PATTERN = r"Tfs: (https:\/\/.*?)\\r"
-REVISION_PATTERN = r"revision: (\d*)"
+REVISION_PATTERN = r"revision: (\d+)"
 
 
 def get_subject(message):
@@ -40,7 +40,7 @@ def get_id(message):
 
 def get_body(message):
     encoded = message['payload']['body']['data']
-    return str(base64.b64decode(encoded))
+    return str(base64.urlsafe_b64decode(encoded))
 
 
 def get_changeset_url(body):
