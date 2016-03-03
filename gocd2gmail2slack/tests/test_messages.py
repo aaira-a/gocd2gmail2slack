@@ -10,9 +10,15 @@ from gocd2gmail2slack.messages import (
     get_body,
     get_changeset_url,
     get_revision_number,
+    get_changeset_comment,
 )
 
-from gocd2gmail2slack.fixtures.gmail_message_detail_1 import MESSAGE1
+from gocd2gmail2slack.fixtures.gmail_message_detail_1 import (
+    MESSAGE1,
+    CHANGESET_MSG_ON_INDIVIDUAL_LINE,
+    CHANGESET_MSG_INLINE_WITH_REVISION,
+    CHANGESET_MSG_INLINE_WITH_REVISION_AND_AFFECTED_FILE,
+)
 
 
 class MessageDetailsTests(unittest.TestCase):
@@ -37,17 +43,31 @@ class MessageDetailsTests(unittest.TestCase):
 
 class MessageBodyTests(unittest.TestCase):
 
-    def setUp(self):
-        self.body = get_body(MESSAGE1)
-
     def test_get_changeset_url(self):
-        actual = get_changeset_url(self.body)
+        body = get_body(MESSAGE1)
+        actual = get_changeset_url(body)
         expected = 'https://code.domain.com/tfs/products/_versionControl/changeset/01234'
         self.assertEqual(expected, actual)
 
     def test_get_revision_number(self):
-        actual = get_revision_number(self.body)
+        body = get_body(MESSAGE1)
+        actual = get_revision_number(body)
         self.assertEqual('01234', actual)
+
+    def test_get_changeset_comment_from_individual_line(self):
+        body = get_body(CHANGESET_MSG_ON_INDIVIDUAL_LINE)
+        actual = get_changeset_comment(body)
+        self.assertEqual('cloud config changes', actual)
+
+    def test_get_changeset_comment_inline_with_revision(self):
+        body = get_body(CHANGESET_MSG_INLINE_WITH_REVISION)
+        actual = get_changeset_comment(body)
+        self.assertEqual('cloud config changes', actual)
+
+    def test_get_changeset_comment_inline_with_revision_affected_file(self):
+        body = get_body(CHANGESET_MSG_INLINE_WITH_REVISION_AND_AFFECTED_FILE)
+        actual = get_changeset_comment(body)
+        self.assertEqual('cloud config changes', actual)
 
 
 class GocdDetailsTests(unittest.TestCase):

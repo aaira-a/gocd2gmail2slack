@@ -4,7 +4,7 @@ import re
 
 GOCD_PATTERN = r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*(passed|failed|is fixed)"
 BASE_TFS_URL_PATTERN = r"Tfs: (https:\/\/.*?)\\r"
-REVISION_PATTERN = r"revision: (\d+)"
+REVISION_PATTERN = r"revision: (\d+), modified by \w+\\\\(\w+) on (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+)\s*([\s\S]*)\s*unknown"
 
 
 def get_subject(message):
@@ -54,3 +54,12 @@ def get_revision_number(body):
     match = re.search(REVISION_PATTERN, body)
     if match:
         return match.group(1)
+
+
+def get_changeset_comment(body):
+    match = re.search(REVISION_PATTERN, body)
+    if match:
+        first_pass = match.group(4)
+        second_pass = first_pass.split('unknown $/', 1)[0]
+        third_pass = second_pass.replace("\\n", "").replace("\\r", "")
+        return third_pass.strip()
