@@ -9,8 +9,10 @@ from gocd2gmail2slack.messages import (
     get_id,
     get_body,
     get_changeset_url,
-    get_revision_number,
+    get_changeset_id,
     get_changeset_comment,
+    get_changeset_author,
+    get_changeset_info,
 )
 
 from gocd2gmail2slack.fixtures.gmail_message_detail_1 import (
@@ -49,9 +51,9 @@ class MessageBodyTests(unittest.TestCase):
         expected = 'https://code.domain.com/tfs/products/_versionControl/changeset/01234'
         self.assertEqual(expected, actual)
 
-    def test_get_revision_number(self):
+    def test_get_changeset_id(self):
         body = get_body(MESSAGE1)
-        actual = get_revision_number(body)
+        actual = get_changeset_id(body)
         self.assertEqual('01234', actual)
 
     def test_get_changeset_comment_from_individual_line(self):
@@ -68,6 +70,19 @@ class MessageBodyTests(unittest.TestCase):
         body = get_body(CHANGESET_MSG_INLINE_WITH_REVISION_AND_AFFECTED_FILE)
         actual = get_changeset_comment(body)
         self.assertEqual('cloud config changes', actual)
+
+    def test_get_changeset_author(self):
+        body = get_body(MESSAGE1)
+        actual = get_changeset_author(body)
+        self.assertEqual('committer', actual)
+
+    def test_get_changeset_info(self):
+        body = get_body(MESSAGE1)
+        expected = {'id': '01234', 'author': 'committer',
+                    'comment': 'cloud config changes',
+                    'url': 'https://code.domain.com/tfs/products/_versionControl/changeset/01234'}
+        actual = get_changeset_info(body)
+        self.assertDictEqual(expected, actual)
 
 
 class GocdDetailsTests(unittest.TestCase):

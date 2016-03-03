@@ -43,14 +43,22 @@ def get_body(message):
     return str(base64.urlsafe_b64decode(encoded))
 
 
+def get_changeset_info(body):
+    result = {'id': get_changeset_id(body),
+              'author': get_changeset_author(body),
+              'comment': get_changeset_comment(body),
+              'url': get_changeset_url(body)}
+    return result
+
+
 def get_changeset_url(body):
     match = re.search(BASE_TFS_URL_PATTERN, body)
     if match:
         base_url = match.group(1)
-        return base_url + "/_versionControl/changeset/" + get_revision_number(body)
+        return base_url + "/_versionControl/changeset/" + get_changeset_id(body)
 
 
-def get_revision_number(body):
+def get_changeset_id(body):
     match = re.search(REVISION_PATTERN, body)
     if match:
         return match.group(1)
@@ -63,3 +71,9 @@ def get_changeset_comment(body):
         second_pass = first_pass.split('unknown $/', 1)[0]
         third_pass = second_pass.replace("\\n", "").replace("\\r", "")
         return third_pass.strip()
+
+
+def get_changeset_author(body):
+    match = re.search(REVISION_PATTERN, body)
+    if match:
+        return match.group(2)

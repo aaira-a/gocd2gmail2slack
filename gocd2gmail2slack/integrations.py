@@ -22,12 +22,10 @@ def main():
                 gocd_details = messages.get_gocd_details(subject)
                 if slack.is_matching_send_rule(gocd_details):
                     body = messages.get_body(message)
-                    revision_number = messages.get_revision_number(body)
-                    changeset_url = messages.get_changeset_url(body)
+                    changeset = messages.get_changeset_info(body)
                     text = (slack
                             .message_builder(gocd_details,
-                                             revision_number,
-                                             changeset_url,
+                                             changeset,
                                              GOCD_DASHBOARD_URL))
                     slack.send_to_slack(text, WEBHOOK_URL)
                     gm.add_label(service, messages.get_id(message),
