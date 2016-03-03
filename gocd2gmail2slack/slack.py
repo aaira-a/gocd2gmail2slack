@@ -7,7 +7,13 @@ def send_to_slack(body, webhook_url):
     requests.post(webhook_url, data=json.dumps(body))
 
 
-def message_builder(pipeline, stage, status, changeset, changeset_url, dashboard_url):
+def message_builder(gocd_details, changeset, dashboard_url):
+
+    pipeline = gocd_details['pipeline']
+    stage = gocd_details['stage']
+    status = gocd_details['status']
+
+    pipeline_url = get_pipeline_url(dashboard_url, pipeline)
 
     if status in ['passed', 'is fixed']:
         icon = ':white_check_mark:'
@@ -18,10 +24,11 @@ def message_builder(pipeline, stage, status, changeset, changeset_url, dashboard
 
     body = {'username': 'go build status - ' + status,
             'icon_emoji': icon,
-            'text': '<' + (get_pipeline_url(dashboard_url, pipeline) + '|' + pipeline + '>')}
+            'text': '<' + pipeline_url + '|' + pipeline + '>'}
 
     if stage not in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
-        body['text'] += '\nChangeset: <' + changeset_url + '|' + changeset + '>'
+        body['text'] += '\nChangeset: <' + changeset['url'] + '|'
+        '' + changeset['id'] + '>'
 
     if status == 'failed':
         body['text'] += '\nStage: ' + stage

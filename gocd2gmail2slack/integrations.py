@@ -25,9 +25,7 @@ def main():
                     revision_number = messages.get_revision_number(body)
                     changeset_url = messages.get_changeset_url(body)
                     text = (slack
-                            .message_builder(gocd_details['pipeline'],
-                                             gocd_details['stage'],
-                                             gocd_details['status'],
+                            .message_builder(gocd_details,
                                              revision_number,
                                              changeset_url,
                                              GOCD_DASHBOARD_URL))

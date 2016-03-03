@@ -35,11 +35,13 @@ class MessageBuilderTests(unittest.TestCase):
 
     @staticmethod
     def factory(pipeline='pipe1', stage='stage1', status='status1',
-                changeset='12345', changeset_url='http://url',
+                changeset={'id': '12345', 'url': 'http://url'},
                 dashboard_url='http://dash'):
-        return {'pipeline': pipeline, 'stage': stage, 'status': status,
-                'changeset': changeset, 'changeset_url': changeset_url,
-                'dashboard_url': dashboard_url}
+
+        return {'gocd_details': {'pipeline': pipeline,
+                                 'stage': stage, 'status': status},
+
+                'changeset': changeset, 'dashboard_url': dashboard_url}
 
     def test_tick_icon_for_passing_build(self):
         params = self.factory(stage='package', status='passed')
