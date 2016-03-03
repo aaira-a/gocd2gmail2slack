@@ -22,13 +22,16 @@ def message_builder(gocd_details, changeset, dashboard_url):
     else:
         return
 
-    body = {'username': 'go build status - ' + status,
+    body = {'username': 'go build status - {0}'.format(status),
             'icon_emoji': icon,
-            'text': '<' + pipeline_url + '|' + pipeline + '>'}
+            'text': '<{0}|{1}>'.format(pipeline_url, pipeline)}
 
     if stage not in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
-        body['text'] += '\nChangeset: <' + changeset['url'] + '|'
-        '' + changeset['id'] + '>'
+        body['text'] += ('\nChangeset: <{0}|{1}> - {2}: {3}'
+                         ''.format(changeset['url'],
+                                   changeset['id'],
+                                   changeset['author'],
+                                   changeset['comment']))
 
     if status == 'failed':
         body['text'] += '\nStage: ' + stage

@@ -35,7 +35,8 @@ class MessageBuilderTests(unittest.TestCase):
 
     @staticmethod
     def factory(pipeline='pipe1', stage='stage1', status='status1',
-                changeset={'id': '12345', 'url': 'http://url'},
+                changeset={'id': '12345', 'url': 'http://url',
+                           'author': 'anon', 'comment': 'fixed'},
                 dashboard_url='http://dash'):
 
         return {'gocd_details': {'pipeline': pipeline,
