@@ -4,7 +4,7 @@ import unittest
 
 import responses
 
-from gocd2gmail2slack.slack import (
+from slack import (
     send_to_slack,
     is_matching_send_rule,
     get_pipeline_url,

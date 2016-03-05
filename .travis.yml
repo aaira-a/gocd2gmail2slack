@@ -4,6 +4,8 @@ python:
 
 install: "pip install -r requirements.txt"
 
+before_script: "cd gocd2gmail2slack/"
+
 script:
  - "coverage run --source=gocd2gmail2slack -m unittest"
 

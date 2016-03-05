@@ -1,7 +1,7 @@
 
 import unittest
 
-from gocd2gmail2slack.messages import (
+from messages import (
     get_subject,
     is_gocd_pattern,
     get_gocd_details,
@@ -15,7 +15,7 @@ from gocd2gmail2slack.messages import (
     get_changeset_info,
 )
 
-from gocd2gmail2slack.fixtures.gmail_message_detail_1 import (
+from fixtures.gmail_message_detail_1 import (
     MESSAGE1,
     CHANGESET_MSG_ON_INDIVIDUAL_LINE,
     CHANGESET_MSG_INLINE_WITH_REVISION,

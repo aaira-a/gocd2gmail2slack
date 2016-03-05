@@ -1,12 +1,12 @@
 
 import unittest
 
-from gocd2gmail2slack.gmail import (
+from gmail import (
     get_label_id,
     query_builder,
 )
 
-from gocd2gmail2slack.fixtures.gmail_labels import LABELS
+from fixtures.gmail_labels import LABELS
 
 
 class LabelTests(unittest.TestCase):
