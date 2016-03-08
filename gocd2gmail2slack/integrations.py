@@ -1,6 +1,6 @@
 
-import gmail as gm
-import messages
+import gmail as Gm
+import messages as Msg
 import slack
 
 from cfg.config import (
@@ -18,30 +18,34 @@ def main():
 
 
 def initialize():
-    service = gm.get_service()
-    labels = gm.get_labels(service)
-    initial_messages = gm.get_messages(service, include_labels=['UNREAD'])
-    messages_details = gm.get_messages_details(service, initial_messages)
+    service = Gm.get_service()
+    labels = Gm.get_labels(service)
+    initial_messages = Gm.get_messages(service, include_labels=['UNREAD'])
+    messages_details = Gm.get_messages_details(service, initial_messages)
     return (service, labels, messages_details)
 
 
 def process(service, labels, messages_details):
-    for message in messages_details:
-        subject = messages.get_subject(message)
-        if messages.is_gocd_pattern(subject):
-            gocd_details = messages.get_gocd_details(subject)
+    for item in messages_details:
+        subject = Msg.get_subject(item)
+
+        if Msg.is_gocd_pattern(subject):
+            gocd_details = Msg.get_gocd_details(subject)
+
             if slack.is_matching_send_rule(gocd_details):
-                body = messages.get_body(message)
-                changeset = messages.get_changeset_info(body)
+                body = Msg.get_body(item)
+                changeset = Msg.get_changeset_info(body)
                 text = (slack
                         .message_builder(gocd_details,
                                          changeset,
                                          GOCD_DASHBOARD_URL))
+
                 slack.send_to_slack(text, WEBHOOK_URL)
-                gm.add_label(service, messages.get_id(message),
+
+                Gm.add_label(service, Msg.get_id(item),
                              'SENT_TO_SLACK', labels)
 
-        gm.remove_label(service, messages.get_id(message),
+        Gm.remove_label(service, Msg.get_id(item),
                         'UNREAD', labels)
 
 

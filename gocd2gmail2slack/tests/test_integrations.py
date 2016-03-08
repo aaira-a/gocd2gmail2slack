@@ -13,7 +13,7 @@ integrations.WEBHOOK_URL = 'http://hook.url'
 integrations.GOCD_DASHBOARD_URL = 'http://dash.url'
 
 
-@patch('integrations.gm')
+@patch('integrations.Gm')
 class GmailInitializerIntegrationsTests(unittest.TestCase):
 
     def test_gmail_service_is_initiated(self, mock):
@@ -35,7 +35,7 @@ class GmailInitializerIntegrationsTests(unittest.TestCase):
 
 
 @patch('integrations.slack.send_to_slack')
-@patch('integrations.gm')
+@patch('integrations.Gm')
 class ProcessingIntegrationsTests(unittest.TestCase):
 
     def setUp(self):
