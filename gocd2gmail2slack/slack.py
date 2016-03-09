@@ -17,7 +17,7 @@ def message_builder(gocd_details, changeset, dashboard_url):
 
     if status in ['passed', 'is fixed']:
         icon = ':white_check_mark:'
-    elif status == 'failed':
+    elif status in ['failed', 'is broken']:
         icon = ':x:'
     else:
         return
@@ -33,14 +33,14 @@ def message_builder(gocd_details, changeset, dashboard_url):
                                    changeset['author'],
                                    changeset['comment']))
 
-    if status == 'failed':
+    if status in ['failed', 'is broken']:
         body['text'] += '\nStage: ' + stage
 
     return body
 
 
 def is_matching_send_rule(gocd_details):
-    if gocd_details['status'] == 'failed':
+    if gocd_details['status'] in ['failed', 'is broken']:
         return True
     if gocd_details['status'] in ['passed', 'is fixed']:
         if gocd_details['stage'] in ['Package', 'Deploy',

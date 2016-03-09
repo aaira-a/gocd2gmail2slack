@@ -59,6 +59,11 @@ class MessageBuilderTests(unittest.TestCase):
         body = message_builder(**params)
         self.assertEqual(':x:', body['icon_emoji'])
 
+    def test_x_icon_for_broken_build(self):
+        params = self.factory(stage='package', status='is broken')
+        body = message_builder(**params)
+        self.assertEqual(':x:', body['icon_emoji'])
+
     def test_include_changeset_for_ci_stages(self):
         for stage in ['Build', 'Test', 'Package', 'Unit']:
             params = self.factory(stage=stage, status='passed')
@@ -76,6 +81,11 @@ class MessageBuilderTests(unittest.TestCase):
         body = message_builder(**params)
         self.assertIn('Stage:', body['text'])
 
+    def test_include_stage_for_broken_builds(self):
+        params = self.factory(status='is broken')
+        body = message_builder(**params)
+        self.assertIn('Stage:', body['text'])
+
     def test_exclude_stage_for_passing_builds(self):
         params = self.factory(status='passed')
         body = message_builder(**params)
@@ -89,8 +99,15 @@ class SlackSendingRuleTests(unittest.TestCase):
         return {'pipeline': pipeline, 'stage': stage, 'status': status}
 
     def test_all_failed_builds_are_sent_regardless_of_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+        for stage in ['Build', 'Test', 'Package', 'Unit',
+                      'Deploy', 'Default', 'defaultStage', 'DeployAll']:
             details = self.factory(stage=stage, status='failed')
+            self.assertTrue(is_matching_send_rule(details))
+
+    def test_all_broken_builds_are_sent_regardless_of_stage(self):
+        for stage in ['Build', 'Test', 'Package', 'Unit',
+                      'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+            details = self.factory(stage=stage, status='is broken')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_passing_build_stage(self):

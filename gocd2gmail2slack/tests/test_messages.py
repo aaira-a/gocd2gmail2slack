@@ -89,9 +89,10 @@ class GocdDetailsTests(unittest.TestCase):
 
     def test_check_gocd_subject_pattern_valid(self):
         subjects = ['FW: Stage [proDuct.branch.CI/100/Package/1] passed',
-                    'FW: Stage [product.branch.CI/0/Package/2] is fixed'
+                    'FW: Stage [product.branch.CI/0/Package/2] is fixed',
                     'Stage [product.braNch.Deploy.Test0/212/Package/1] passed',
-                    'Stage [product2.branch2.CI/10999/Package/1] failed']
+                    'Stage [product2.branch2.CI/10999/Package/1] failed',
+                    'Stage [prod.bch.Deploy.Test0/212/Package/1] is broken']
         for subject in subjects:
             self.assertTrue(is_gocd_pattern(subject))
 
