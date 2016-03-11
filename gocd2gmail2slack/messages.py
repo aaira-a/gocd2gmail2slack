@@ -2,9 +2,15 @@
 import base64
 import re
 
-GOCD_PATTERN = r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*(passed|failed|is fixed|is broken)"
+GOCD_PATTERN = (r"Stage\s*\[(\S*)\/\d*\/(\S*)\/\d*\]\s*"
+                r"(passed|failed|is fixed|is broken)")
+
 BASE_TFS_URL_PATTERN = r"Tfs: (https:\/\/.*?)\\r"
-REVISION_PATTERN = r"revision: (\d+), modified by \w+\\\\(\w+) on (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+)\s*([\s\S]*)\s*unknown"
+
+REVISION_PATTERN = (r"revision: (\d+), "
+                    r"modified by \w+\\\\(\w+) "
+                    r"on (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+)\s*"
+                    r"([\s\S]*)\s*unknown")
 
 
 def get_subject(message):
