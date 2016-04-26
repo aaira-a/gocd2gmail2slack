@@ -100,23 +100,27 @@ class SlackSendingRuleTests(unittest.TestCase):
 
     def test_all_failed_builds_are_sent_regardless_of_stage(self):
         for stage in ['Build', 'Test', 'Package', 'Unit',
-                      'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+                      'Deploy', 'Default', 'defaultStage', 'DeployAll',
+                      'DeployEU', 'deploy-eu']:
             details = self.factory(stage=stage, status='failed')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_all_broken_builds_are_sent_regardless_of_stage(self):
         for stage in ['Build', 'Test', 'Package', 'Unit',
-                      'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+                      'Deploy', 'Default', 'defaultStage', 'DeployAll',
+                      'DeployEU', 'deploy-eu']:
             details = self.factory(stage=stage, status='is broken')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_passing_build_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+        for stage in ['Package', 'Deploy', 'Default', 'defaultStage',
+                      'DeployAll', 'DeployEU', 'deploy-eu']:
             details = self.factory(stage=stage, status='passed')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_fixed_build_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage', 'DeployAll']:
+        for stage in ['Package', 'Deploy', 'Default', 'defaultStage',
+                      'DeployAll', 'DeployEU', 'deploy-eu']:
             details = self.factory(stage=stage, status='is fixed')
             self.assertTrue(is_matching_send_rule(details))
 
