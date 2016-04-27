@@ -14,6 +14,11 @@ from slack import (
 TEST_WEBHOOK_URL = 'https://web.hook.url/123/456'
 TEST_GOCD_DASHBOARD_URL = 'http://domain:port/go'
 
+TEST_CI_STAGES = ['Build', 'Test', 'Unit', 'Package']
+
+TEST_DEPLOY_STAGES = ['Deploy', 'Default', 'defaultStage',
+                      'DeployAll', 'DeployEU', 'deploy-eu']
+
 
 class SlackIncomingWebhookTests(unittest.TestCase):
 
@@ -65,13 +70,13 @@ class MessageBuilderTests(unittest.TestCase):
         self.assertEqual(':x:', body['icon_emoji'])
 
     def test_include_changeset_for_ci_stages(self):
-        for stage in ['Build', 'Test', 'Package', 'Unit']:
+        for stage in TEST_CI_STAGES:
             params = self.factory(stage=stage, status='passed')
             body = message_builder(**params)
             self.assertIn('Changeset:', body['text'])
 
     def test_exclude_changeset_for_deploy_stages(self):
-        for stage in ['Deploy', 'defaultStage', 'Default', 'DeployAll']:
+        for stage in TEST_DEPLOY_STAGES:
             params = self.factory(stage=stage, status='passed')
             body = message_builder(**params)
             self.assertNotIn('Changeset:', body['text'])
@@ -99,28 +104,22 @@ class SlackSendingRuleTests(unittest.TestCase):
         return {'pipeline': pipeline, 'stage': stage, 'status': status}
 
     def test_all_failed_builds_are_sent_regardless_of_stage(self):
-        for stage in ['Build', 'Test', 'Package', 'Unit',
-                      'Deploy', 'Default', 'defaultStage', 'DeployAll',
-                      'DeployEU', 'deploy-eu']:
+        for stage in TEST_CI_STAGES + TEST_DEPLOY_STAGES:
             details = self.factory(stage=stage, status='failed')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_all_broken_builds_are_sent_regardless_of_stage(self):
-        for stage in ['Build', 'Test', 'Package', 'Unit',
-                      'Deploy', 'Default', 'defaultStage', 'DeployAll',
-                      'DeployEU', 'deploy-eu']:
+        for stage in TEST_CI_STAGES + TEST_DEPLOY_STAGES:
             details = self.factory(stage=stage, status='is broken')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_passing_build_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage',
-                      'DeployAll', 'DeployEU', 'deploy-eu']:
+        for stage in ['Package'] + TEST_DEPLOY_STAGES:
             details = self.factory(stage=stage, status='passed')
             self.assertTrue(is_matching_send_rule(details))
 
     def test_list_of_allowed_fixed_build_stage(self):
-        for stage in ['Package', 'Deploy', 'Default', 'defaultStage',
-                      'DeployAll', 'DeployEU', 'deploy-eu']:
+        for stage in ['Package'] + TEST_DEPLOY_STAGES:
             details = self.factory(stage=stage, status='is fixed')
             self.assertTrue(is_matching_send_rule(details))
 
