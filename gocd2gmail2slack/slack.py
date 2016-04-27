@@ -2,6 +2,11 @@
 import json
 import requests
 
+from cfg.config import (
+    CI_STAGES,
+    DEPLOY_STAGES,
+)
+
 
 def send_to_slack(body, webhook_url):
     requests.post(webhook_url, data=json.dumps(body))
@@ -26,8 +31,7 @@ def message_builder(gocd_details, changeset, dashboard_url):
             'icon_emoji': icon,
             'text': '<{0}|{1}>'.format(pipeline_url, pipeline)}
 
-    if stage not in ['Deploy', 'defaultStage', 'Default', 'DeployAll',
-                     'DeployEU', 'deploy-eu']:
+    if stage not in DEPLOY_STAGES:
         body['text'] += ('\nChangeset: <{0}|{1}> - {2}: {3}'
                          ''.format(changeset['url'],
                                    changeset['id'],
@@ -44,9 +48,7 @@ def is_matching_send_rule(gocd_details):
     if gocd_details['status'] in ['failed', 'is broken']:
         return True
     if gocd_details['status'] in ['passed', 'is fixed']:
-        if gocd_details['stage'] in ['Package', 'Deploy',
-                                     'Default', 'defaultStage',
-                                     'DeployAll', 'DeployEU', 'deploy-eu']:
+        if gocd_details['stage'] in ['Package'] + DEPLOY_STAGES:
             return True
     else:
         return False

@@ -4,6 +4,8 @@ import unittest
 
 import responses
 
+import slack
+
 from slack import (
     send_to_slack,
     is_matching_send_rule,
@@ -18,6 +20,11 @@ TEST_CI_STAGES = ['Build', 'Test', 'Unit', 'Package']
 
 TEST_DEPLOY_STAGES = ['Deploy', 'Default', 'defaultStage',
                       'DeployAll', 'DeployEU', 'deploy-eu']
+
+
+slack.CI_STAGES = TEST_CI_STAGES
+
+slack.DEPLOY_STAGES = TEST_DEPLOY_STAGES
 
 
 class SlackIncomingWebhookTests(unittest.TestCase):

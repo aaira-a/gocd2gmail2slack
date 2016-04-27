@@ -20,12 +20,13 @@ then maybe this solution is acceptable. Nevertheless, it was a good learning exe
     pip install -r requirements.txt
     ```
 4. Edit ```config.py``` to include Slack Incoming Webhook and GoCD dashboard URLs ([template](https://github.com/azam-a/gocd2gmail2slack/blob/master/gocd2gmail2slack/cfg/config.py))
-5. Paste the ```client_secret.json``` from Step 1 into the ```cfg``` [folder](https://github.com/azam-a/gocd2gmail2slack/blob/master/gocd2gmail2slack/cfg/)
-6. ```cd``` into the ```gocd2gmail2slack``` directory (which contains ```integrations.py```)
-7. (optional) To run tests, run ```python -m unittest``` from the same directory as Step 6
-6. Create a Gmail label ```'SENT_TO_SLACK'``` at the intended Gmail account
-8. run ```python integrations.py```
-9. The first run will open a browser to authenticate and authorize a Gmail account
-10. The credentials will be saved to ```cfg/cred/saved_credentials.json``` for subsequent runs
-11. The script will query all the ```'UNREAD'``` emails and process them accordingly
-12. Schedule the running of ```python integrations.py``` every X minutes using Task Scheduler or Cron
+5. Edit ```config.py``` to define ```CI_STAGES``` and ```DEPLOY_STAGES``` in a form of list of string. These definitions are used by sending rule as well as changeset-exclusion logic in [slack.py](https://github.com/azam-a/gocd2gmail2slack/blob/master/gocd2gmail2slack/slack.py)
+6. Paste the ```client_secret.json``` from Step 1 into the ```cfg``` [folder](https://github.com/azam-a/gocd2gmail2slack/blob/master/gocd2gmail2slack/cfg/)
+7. ```cd``` into the ```gocd2gmail2slack``` directory (which contains ```integrations.py```)
+8. (optional) To run tests, run ```python -m unittest``` from the same directory as Step 7
+9. Create a Gmail label ```'SENT_TO_SLACK'``` at the intended Gmail account
+10. run ```python integrations.py```
+11. The first run will open a browser to authenticate and authorize a Gmail account
+12. The credentials will be saved to ```cfg/cred/saved_credentials.json``` for subsequent runs
+13. The script will query all the ```'UNREAD'``` emails and process them accordingly
+14. Schedule the running of ```python integrations.py``` every X minutes using Task Scheduler or Cron
