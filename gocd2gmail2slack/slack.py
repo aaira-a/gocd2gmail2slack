@@ -31,7 +31,7 @@ def message_builder(gocd_details, changeset, dashboard_url):
             'icon_emoji': icon,
             'text': '<{0}|{1}>'.format(pipeline_url, pipeline)}
 
-    if stage not in DEPLOY_STAGES:
+    if stage in CI_STAGES:
         body['text'] += ('\nChangeset: <{0}|{1}> - {2}: {3}'
                          ''.format(changeset['url'],
                                    changeset['id'],
