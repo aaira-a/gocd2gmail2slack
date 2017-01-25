@@ -48,7 +48,7 @@ def is_matching_send_rule(gocd_details):
     if gocd_details['status'] in ['failed', 'is broken']:
         return True
     if gocd_details['status'] in ['passed', 'is fixed']:
-        if gocd_details['stage'] in ['Package'] + DEPLOY_STAGES:
+        if gocd_details['stage'] in ['Package', 'package'] + DEPLOY_STAGES:
             return True
     else:
         return False
